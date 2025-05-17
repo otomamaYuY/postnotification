@@ -4,13 +4,6 @@
 #include <WioCellular.h>
 #include <ArduinoHttpClient.h>
 
-// Network configuration based on the official example
-#define SEARCH_ACCESS_TECHNOLOGY (WioCellularNetwork::SearchAccessTechnology::LTEM)
-#define LTEM_BAND (WioCellularNetwork::NTTDOCOMO_LTEM_BAND)
-static const char APN[] = "soracom.io";
-
-static constexpr int POWER_ON_TIMEOUT = 20000;     // [ms]
-static constexpr int NETWORK_TIMEOUT  = 120000;    // [ms]
 
 // Pin definitions for ultrasonic sensor
 const int PIN_TRIG = 3; // Example pin for TRIG
@@ -34,8 +27,7 @@ WioCellular Wio;
 float readDistance();
 void sendDiscordNotification(const String &message);
 void enterLowPower(unsigned long ms);
-bool connectCellular();
-void disconnectCellular();
+
 
 void setup() {
   Serial.begin(115200);
@@ -48,11 +40,7 @@ void setup() {
   pinMode(PIN_ECHO, INPUT);
   digitalWrite(PIN_TRIG, LOW);
 
-  // Initialize cellular module
-  WioCellular.begin();
-  WioNetwork.config.searchAccessTechnology = SEARCH_ACCESS_TECHNOLOGY;
-  WioNetwork.config.ltemBand = LTEM_BAND;
-  WioNetwork.config.apn = APN;
+
 }
 
 void loop() {
@@ -90,11 +78,6 @@ float readDistance() {
 }
 
 void sendDiscordNotification(const String &message) {
-  if (!connectCellular()) {
-    return;
-  }
-
-  HttpClient client = HttpClient(WioCellular, WEBHOOK_HOST, 443);
   String payload = String("{\"content\":\"") + message + "\"}";
 
   client.beginRequest();
@@ -109,37 +92,11 @@ void sendDiscordNotification(const String &message) {
   Serial.println(status);
 
   client.stop();
-  disconnectCellular();
+
 }
 
 void enterLowPower(unsigned long ms) {
   Wio.setPowerSavingMode(true);
   delay(ms);
   Wio.setPowerSavingMode(false);
-}
-
-bool connectCellular() {
-  Serial.println("Powering on cellular module...");
-  if (WioCellular.powerOn(POWER_ON_TIMEOUT) != WioCellularResult::Ok) {
-    Serial.println("Failed to power on module.");
-    return false;
-  }
-
-  WioNetwork.begin();
-  if (!WioNetwork.waitUntilCommunicationAvailable(NETWORK_TIMEOUT)) {
-    Serial.println("Network connection failed.");
-    return false;
-  }
-
-  Serial.println("Network connected.");
-  return true;
-}
-
-void disconnectCellular() {
-  WioNetwork.end();
-  if (WioCellular.powerOff() != WioCellularResult::Ok) {
-    Serial.println("Failed to power off module.");
-  } else {
-    Serial.println("Cellular module powered off.");
-  }
 }

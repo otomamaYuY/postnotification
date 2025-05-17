@@ -18,7 +18,6 @@ entering a low-power mode between measurements.
 2. Flash the sketch to the Wio BG770A.
 3. Adjust `emptyDistance` and `mailThreshold` according to your mailbox size.
 4. Power the board with a battery and ensure the KDDI SIM is inserted.
-5. If necessary, modify the network constants (`SEARCH_ACCESS_TECHNOLOGY`, `LTEM_BAND`, `APN`) in the sketch to match your provider.
 
 Upon detecting mail, the device activates its LTE connection, posts a message to
 Discord, and then returns to low-power mode.

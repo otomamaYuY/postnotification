@@ -1,3 +1,28 @@
+# メールボックス通知スケッチ
+
+このリポジトリは、**Wio BG770A** ボード用の Arduino スケッチの例を提供します。
+このスケッチは超音波距離センサーを使用してメールボックスに新しいメールが到着したかを検出し
+Discord チャンネルにウェブフック経由で通知を送信します。
+LTE 経由で送信されます。バッテリー駆動を想定しており、測定の間隔で低消費電力モードに移行することで
+電力消費を最小限に抑えるように設計されています。
+
+## ファイル
+
+- `mailbox_notifier.ino` – コンパイル可能な完成済みのスケッチ。使用前に
+`WEBHOOK_PATH`定数をDiscordのウェブフックIDとトークンで置き換えてください。
+
+## 使用方法
+
+1. 超音波センサー（例：HC-SR04）をスケッチで指定されたピン（`PIN_TRIG`と`PIN_ECHO`）に接続します。
+2. スケッチをWio BG770Aにフラッシュします。
+2. スケッチをWio BG770Aにフラッシュします。
+3. `emptyDistance`と`mailThreshold`を郵便受けのサイズに合わせて調整します。
+4. ボードにバッテリーを接続し、KDDI SIMが挿入されていることを確認します。
+
+郵便物を検出すると、デバイスはLTE接続をアクティブ化し、
+Discordにメッセージを投稿し、その後低消費電力モードに戻ります。
+
+
 # Mailbox Notification Sketch
 
 This repository provides an example Arduino sketch for the **Wio BG770A** board.

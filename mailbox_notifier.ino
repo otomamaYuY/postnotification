@@ -4,6 +4,7 @@
 #include <WioCellular.h>
 #include <ArduinoHttpClient.h>
 
+
 // Pin definitions for ultrasonic sensor
 const int PIN_TRIG = 3; // Example pin for TRIG
 const int PIN_ECHO = 2; // Example pin for ECHO
@@ -27,6 +28,7 @@ float readDistance();
 void sendDiscordNotification(const String &message);
 void enterLowPower(unsigned long ms);
 
+
 void setup() {
   Serial.begin(115200);
   while (!Serial) {
@@ -38,10 +40,7 @@ void setup() {
   pinMode(PIN_ECHO, INPUT);
   digitalWrite(PIN_TRIG, LOW);
 
-  // Initialize cellular
-  if (!Wio.init()) {
-    Serial.println("Failed to init WioCellular");
-  }
+
 }
 
 void loop() {
@@ -79,12 +78,6 @@ float readDistance() {
 }
 
 void sendDiscordNotification(const String &message) {
-  if (!Wio.activate()) {
-    Serial.println("Failed to activate network");
-    return;
-  }
-
-  HttpClient client = HttpClient(Wio, WEBHOOK_HOST, 443);
   String payload = String("{\"content\":\"") + message + "\"}";
 
   client.beginRequest();
@@ -99,7 +92,7 @@ void sendDiscordNotification(const String &message) {
   Serial.println(status);
 
   client.stop();
-  Wio.deactivate();
+
 }
 
 void enterLowPower(unsigned long ms) {
